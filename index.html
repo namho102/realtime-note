@@ -7,6 +7,18 @@
 	<link rel="stylesheet" href="">
 </head>
 <body>
-	<textarea name="" id="" cols="100" rows="20"></textarea>
+	<textarea name="" id="note" cols="100" rows="20"></textarea>
+
+	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+
+	<script>
+		var socket = io();
+		var note = document.getElementById('note');
+		note.addEventListener('input', function(event) {
+			socket.emit('content', event.target.value);
+			// console.log(event.target.value);
+		})
+		// console.log(note)
+	</script>
 </body>
 </html>

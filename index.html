@@ -14,6 +14,13 @@
 	<script>
 		var socket = io();
 		var note = document.getElementById('note');
+		socket.on('update', function (data) {
+			console.log('updated')
+			var start = note.selectionStart,
+        	end = note.selectionEnd;
+			note.value = data;
+			note.setSelectionRange(start, end);
+		})
 		note.addEventListener('input', function(event) {
 			socket.emit('content', event.target.value);
 			// console.log(event.target.value);

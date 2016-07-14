@@ -14,14 +14,22 @@ r.connect({
 
 	io.on('connection', function(socket) {
 		console.log('a user connected');
+		// console.log(r.table("Notes").limit(1).get())
+		r.table("Notes")('content').limit(1).run(connection).then(function(cursor) {
+			cursor.next(function(err, row) {
+				socket.emit('update', row)
+			});
+		})
+		// socket.emit('update', 'new')
 		socket.on('disconnect', function() {
 			console.log('user disconnected');
 		});
 
 		socket.on('content', function(data) {
 			// console.log(data);
+			socket.broadcast.emit('update', data)
 			r.table("Notes").update({content: data}).run(connection);
-			
+
 		})
 	});
 

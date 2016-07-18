@@ -16,13 +16,31 @@
 		var note = document.getElementById('note');
 		socket.on('update', function (data) {
 			console.log('updated')
+			console.log('friend start: ', data.start)
+
+
 			var start = note.selectionStart,
         	end = note.selectionEnd;
-			note.value = data;
-			note.setSelectionRange(start, end);
+        	console.log('my start: ', start);
+
+			if(typeof data == 'object') {
+				note.value = data.content;
+			}
+			else {
+				note.value = data;
+			}
+			
+			if(data.start < start) {
+				note.setSelectionRange(start + 1, end + 1);
+			}
+			else {
+				note.setSelectionRange(start, end);
+			}
+			
 		})
 		note.addEventListener('input', function(event) {
-			socket.emit('content', event.target.value);
+			socket.emit('content', {content: event.target.value, 'start': note.selectionStart, 'end': note.selectionEnd});
+
 			// console.log(event.target.value);
 		})
 		// console.log(note)

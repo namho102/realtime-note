@@ -18,6 +18,13 @@
 			left: 0;
 			right: 0;
 	}
+	video {
+			margin: 0;
+			position: absolute;
+			top: 0;
+			right: 0;
+			width: 20%;
+	}
 	</style>
 </head>
 <body>
@@ -25,8 +32,17 @@
 
 	<div id="editor"></div>
 
+	<video id="gum-local" autoplay></video>
+
+    <div id="errorMsg"></div>
+
 	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 	<script src="ace.js"></script>
+
+	<script src="adapter.js"></script>
+	<script src="common.js"></script>
+	<script src="main.js"></script>
+
 	<!-- <script src="theme-monokai.js"> -->
 
 	</script>

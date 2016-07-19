@@ -17,6 +17,7 @@ r.connect({
 		// console.log(r.table("Notes").limit(1).get())
 		r.table("Notes")('content').limit(1).run(connection).then(function(cursor) {
 			cursor.next(function(err, row) {
+				// console.log(row)
 				socket.emit('update', row)
 			});
 		})

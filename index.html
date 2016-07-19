@@ -5,45 +5,60 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>Realtime Editor</title>
 	<link rel="stylesheet" href="">
+	<style>
+	body {
+			overflow: hidden;
+	}
+
+	#editor {
+			margin: 0;
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			right: 0;
+	}
+	</style>
 </head>
 <body>
-	<textarea name="" id="note" cols="100" rows="20"></textarea>
+	<!-- <textarea name="" id="note" cols="100" rows="20"></textarea> -->
+
+	<div id="editor"></div>
 
 	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+	<script src="ace.js"></script>
+	<!-- <script src="theme-monokai.js"> -->
 
+	</script>
 	<script>
+		var editor = ace.edit("editor");
+		editor.setTheme("ace/theme/monokai");
+		editor.getSession().setMode("ace/mode/javascript");
+		editor.$blockScrolling = Infinity;
+		editor.setByAPI = false;
+		editor.setFontSize(14);
+
 		var socket = io();
-		var note = document.getElementById('note');
+
 		socket.on('update', function (data) {
 			console.log('updated')
-			console.log('friend start: ', data.start)
 
+			editor.setByAPI = true;
+      editor.setValue(data.content);
+      editor.clearSelection();
+			editor.setByAPI = false;
 
-			var start = note.selectionStart,
-        	end = note.selectionEnd;
-        	console.log('my start: ', start);
-
-			if(typeof data == 'object') {
-				note.value = data.content;
-			}
-			else {
-				note.value = data;
-			}
-			
-			if(data.start < start) {
-				note.setSelectionRange(start + 1, end + 1);
-			}
-			else {
-				note.setSelectionRange(start, end);
-			}
-			
 		})
-		note.addEventListener('input', function(event) {
-			socket.emit('content', {content: event.target.value, 'start': note.selectionStart, 'end': note.selectionEnd});
 
-			// console.log(event.target.value);
-		})
-		// console.log(note)
+		editor.getSession().on('change', function(e) {
+	    // console.log(editor.getValue());
+			if (!editor.setByAPI) {
+      	socket.emit('content', {content: editor.getValue()});
+      }
+
+		});
+
+
 	</script>
 </body>
 </html>

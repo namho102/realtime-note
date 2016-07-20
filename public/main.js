@@ -24,21 +24,36 @@ var sdpConstraints = {
 
 /////////////////////////////////////////////
 
-var room = 'foo';
+var room = 'bar';
 // Could prompt for room name:
 // room = prompt('Enter room name:');
 
 var socket = io();
 
-socket.on('update', function (data) {
-  console.log('updated')
+var editor = ace.edit("editor");
+editor.setTheme("ace/theme/monokai");
+editor.getSession().setMode("ace/mode/javascript");
+editor.$blockScrolling = Infinity;
+editor.setByAPI = false;
+editor.setFontSize(14);
 
-  editor.setByAPI = true;
+
+socket.on('update', function (data) {
+	console.log('updated')
+
+	editor.setByAPI = true;
   editor.setValue(data.content);
   editor.clearSelection();
-  editor.setByAPI = false;
+	editor.setByAPI = false;
 
 })
+
+editor.getSession().on('change', function(e) {
+  // console.log(editor.getValue());
+  if (!editor.setByAPI) {
+    socket.emit('content', {content: editor.getValue()});
+  }
+});
 
 
 if (room !== '') {
@@ -232,20 +247,57 @@ function requestTurn(turnURL) {
   if (!turnExists) {
     console.log('Getting TURN server from ', turnURL);
     // No TURN server. Get one from computeengineondemand.appspot.com:
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState === 4 && xhr.status === 200) {
-        var turnServer = JSON.parse(xhr.responseText);
-        console.log('Got TURN server: ', turnServer);
-        pcConfig.iceServers.push({
-          'url': 'turn:' + turnServer.username + '@' + turnServer.turn,
-          'credential': turnServer.password
-        });
-        turnReady = true;
+    // var xhr = new XMLHttpRequest();
+    // xhr.onreadystatechange = function() {
+    //   if (xhr.readyState === 4 && xhr.status === 200) {
+    //     var turnServer = JSON.parse(xhr.responseText);
+    //     console.log('Got TURN server: ', turnServer);
+    //     pcConfig.iceServers.push({
+    //       'url': 'turn:' + turnServer.username + '@' + turnServer.turn,
+    //       'credential': turnServer.password
+    //     });
+    //     turnReady = true;
+    //   }
+    // };
+
+
+    if(XMLHttpRequest)
+    {
+      var xhr = new XMLHttpRequest();
+      if("withCredentials" in xhr)
+      {
+       // Firefox 3.5 and Safari 4
+       xhr.open('GET', turnURL, true);
+
+       xhr.onreadystatechange = function() {
+         if (xhr.readyState === 4 && xhr.status === 200) {
+           var turnServer = JSON.parse(xhr.responseText);
+           console.log('Got TURN server: ', turnServer);
+           pcConfig.iceServers.push({
+             'url': 'turn:' + turnServer.username + '@' + turnServer.turn,
+             'credential': turnServer.password
+           });
+           turnReady = true;
+         }
+       };
+
+       xhr.send();
       }
-    };
-    xhr.open('GET', turnURL, true);
-    xhr.send();
+      else if (XDomainRequest)
+      {
+       // IE8
+       var xdr = new XDomainRequest();
+       xdr.open("get", turnURL);
+       xdr.send();
+
+       // handle XDR responses -- not shown here :-)
+      }
+
+     // This version of XHR does not support CORS
+     // Handle accordingly
+    }
+    // xhr.open('GET', turnURL, true);
+    // xhr.send();
   }
 }
 

@@ -48,38 +48,5 @@
 	<script src="adapter.js"></script>
 	<script src="main.js"></script>
 
-	<!-- <script src="theme-monokai.js"> -->
-
-	</script>
-	<script>
-		var editor = ace.edit("editor");
-		editor.setTheme("ace/theme/monokai");
-		editor.getSession().setMode("ace/mode/javascript");
-		editor.$blockScrolling = Infinity;
-		editor.setByAPI = false;
-		editor.setFontSize(14);
-
-		// var socket = io();
-
-		// socket.on('update', function (data) {
-		// 	console.log('updated')
-		//
-		// 	editor.setByAPI = true;
-    //   editor.setValue(data.content);
-    //   editor.clearSelection();
-		// 	editor.setByAPI = false;
-		//
-		// })
-
-		editor.getSession().on('change', function(e) {
-	    // console.log(editor.getValue());
-			if (!editor.setByAPI) {
-      	socket.emit('content', {content: editor.getValue()});
-      }
-
-		});
-
-
-	</script>
 </body>
 </html>

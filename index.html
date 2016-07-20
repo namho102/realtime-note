@@ -18,12 +18,17 @@
 			left: 0;
 			right: 0;
 	}
-	video {
+	#videos {
 			margin: 0;
 			position: absolute;
 			top: 0;
 			right: 0;
 			width: 20%;
+			z-index: 100;
+	}
+	#videos video {
+		margin: 0;
+		width: 100%;
 	}
 	</style>
 </head>
@@ -32,15 +37,15 @@
 
 	<div id="editor"></div>
 
-	<video id="gum-local" autoplay></video>
-
-    <div id="errorMsg"></div>
+	<div id="videos">
+    <video id="localVideo" autoplay muted></video>
+    <video id="remoteVideo" autoplay></video>
+  </div>
 
 	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 	<script src="ace.js"></script>
 
 	<script src="adapter.js"></script>
-	<script src="common.js"></script>
 	<script src="main.js"></script>
 
 	<!-- <script src="theme-monokai.js"> -->
@@ -54,17 +59,17 @@
 		editor.setByAPI = false;
 		editor.setFontSize(14);
 
-		var socket = io();
+		// var socket = io();
 
-		socket.on('update', function (data) {
-			console.log('updated')
-
-			editor.setByAPI = true;
-      editor.setValue(data.content);
-      editor.clearSelection();
-			editor.setByAPI = false;
-
-		})
+		// socket.on('update', function (data) {
+		// 	console.log('updated')
+		//
+		// 	editor.setByAPI = true;
+    //   editor.setValue(data.content);
+    //   editor.clearSelection();
+		// 	editor.setByAPI = false;
+		//
+		// })
 
 		editor.getSession().on('change', function(e) {
 	    // console.log(editor.getValue());

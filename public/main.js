@@ -287,7 +287,7 @@ function requestTurn(turnURL) {
       {
        // IE8
        var xdr = new XDomainRequest();
-       xdr.open("get", turnURL);
+       xdr.open("GET", turnURL);
        xdr.send();
 
        // handle XDR responses -- not shown here :-)

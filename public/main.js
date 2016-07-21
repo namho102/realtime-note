@@ -24,9 +24,9 @@ var sdpConstraints = {
 
 /////////////////////////////////////////////
 
-var room = 'bar';
+// var room = 'bar';
 // Could prompt for room name:
-// room = prompt('Enter room name:');
+var room = prompt('Enter room name:');
 
 var socket = io();
 
@@ -160,9 +160,9 @@ function maybeStart() {
     pc.addStream(localStream);
     isStarted = true;
     console.log('isInitiator', isInitiator);
-    if (isInitiator) {
+    // if (isInitiator) {
       doCall();
-    }
+    // }
   }
 }
 

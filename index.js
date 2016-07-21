@@ -30,18 +30,10 @@ http.listen(app.get('port'), function() {
 
 io.on('connection', function(socket) {
 	console.log('a user connected');
-	// console.log(r.table("Notes").limit(1).get())
-	// r.table("Notes")('content').limit(1).run(connection).then(function(cursor) {
-	// 	cursor.next(function(err, row) {
-	// 		// console.log(row)
-	// 		socket.emit('update', row)
-	// 	});
-	// })
 
 	Code.findOne(function(err, code) {
 		socket.emit('update', code)
 	});
-
 
 	// socket.emit('update', 'new')
 	socket.on('disconnect', function() {
@@ -55,8 +47,6 @@ io.on('connection', function(socket) {
 			code.content = data.content;
 			code.save();
 		});
-
-		// r.table("Notes").update({content: data}).run(connection);
 
 	})
 

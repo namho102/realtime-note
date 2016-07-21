@@ -24,9 +24,9 @@ var sdpConstraints = {
 
 /////////////////////////////////////////////
 
-// var room = 'bar';
+var room = 'bar';
 // Could prompt for room name:
-var room = prompt('Enter room name:');
+// var room = prompt('Enter room name:');
 
 var socket = io();
 
@@ -38,20 +38,22 @@ editor.setByAPI = false;
 editor.setFontSize(14);
 
 
-socket.on('update', function (data) {
-	console.log('updated')
+socket.on('update', function(data) {
+  console.log('updated')
 
-	editor.setByAPI = true;
+  editor.setByAPI = true;
   editor.setValue(data.content);
   editor.clearSelection();
-	editor.setByAPI = false;
+  editor.setByAPI = false;
 
 })
 
 editor.getSession().on('change', function(e) {
   // console.log(editor.getValue());
   if (!editor.setByAPI) {
-    socket.emit('content', {content: editor.getValue()});
+    socket.emit('content', {
+      content: editor.getValue()
+    });
   }
 });
 
@@ -70,7 +72,7 @@ socket.on('full', function(room) {
   console.log('Room ' + room + ' is full');
 });
 
-socket.on('join', function (room){
+socket.on('join', function(room) {
   console.log('Another peer made a request to join room ' + room);
   console.log('This peer is the initiator of room ' + room + '!');
   isChannelReady = true;
@@ -122,13 +124,13 @@ var localVideo = document.querySelector('#localVideo');
 var remoteVideo = document.querySelector('#remoteVideo');
 
 navigator.mediaDevices.getUserMedia({
-  audio: true,
-  video: true
-})
-.then(gotStream)
-.catch(function(e) {
-  alert('getUserMedia() error: ' + e.name);
-});
+    audio: true,
+    video: true
+  })
+  .then(gotStream)
+  .catch(function(e) {
+    alert('getUserMedia() error: ' + e.name);
+  });
 
 function gotStream(stream) {
   console.log('Adding local stream.');
@@ -247,55 +249,40 @@ function requestTurn(turnURL) {
   if (!turnExists) {
     console.log('Getting TURN server from ', turnURL);
     // No TURN server. Get one from computeengineondemand.appspot.com:
-    // var xhr = new XMLHttpRequest();
-    // xhr.onreadystatechange = function() {
-    //   if (xhr.readyState === 4 && xhr.status === 200) {
-    //     var turnServer = JSON.parse(xhr.responseText);
-    //     console.log('Got TURN server: ', turnServer);
-    //     pcConfig.iceServers.push({
-    //       'url': 'turn:' + turnServer.username + '@' + turnServer.turn,
-    //       'credential': turnServer.password
-    //     });
-    //     turnReady = true;
+    pcConfig.iceServers.push({
+      'url': 'turn:' + '1469174466:41784574' + '@' + '130.211.253.58:3479?transport=ud',
+      'credential': 'B8q3KlQSqWxka0PEOaDgZ7z85OE='
+    });
+    turnReady = true;
+
+    // if (XMLHttpRequest) {
+    //   var xhr = new XMLHttpRequest();
+    //   if ("withCredentials" in xhr) {
+    //     // Firefox 3.5 and Safari 4
+    //     xhr.open('GET', turnURL, true);
+
+    //     xhr.onreadystatechange = function() {
+    //       if (xhr.readyState === 4 && xhr.status === 200) {
+    //         var turnServer = JSON.parse(xhr.responseText);
+    //         console.log('Got TURN server: ', turnServer);
+    //         pcConfig.iceServers.push({
+    //           'url': 'turn:' + turnServer.username + '@' + turnServer.turn,
+    //           'credential': turnServer.password
+    //         });
+    //         turnReady = true;
+    //       }
+    //     };
+
+    //     xhr.send();
+    //   } else if (XDomainRequest) {
+    //     // IE8
+    //     var xdr = new XDomainRequest();
+    //     xdr.open("GET", turnURL);
+    //     xdr.send();
+
     //   }
-    // };
 
-
-    if(XMLHttpRequest)
-    {
-      var xhr = new XMLHttpRequest();
-      if("withCredentials" in xhr)
-      {
-       // Firefox 3.5 and Safari 4
-       xhr.open('GET', turnURL, true);
-
-       xhr.onreadystatechange = function() {
-         if (xhr.readyState === 4 && xhr.status === 200) {
-           var turnServer = JSON.parse(xhr.responseText);
-           console.log('Got TURN server: ', turnServer);
-           pcConfig.iceServers.push({
-             'url': 'turn:' + turnServer.username + '@' + turnServer.turn,
-             'credential': turnServer.password
-           });
-           turnReady = true;
-         }
-       };
-
-       xhr.send();
-      }
-      else if (XDomainRequest)
-      {
-       // IE8
-       var xdr = new XDomainRequest();
-       xdr.open("GET", turnURL);
-       xdr.send();
-
-       // handle XDR responses -- not shown here :-)
-      }
-
-     // This version of XHR does not support CORS
-     // Handle accordingly
-    }
+    // }
     // xhr.open('GET', turnURL, true);
     // xhr.send();
   }

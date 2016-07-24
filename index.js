@@ -73,7 +73,7 @@ io.on('connection', function(socket) {
 		log('Room ' + room + ' now has ' + numClients + ' client(s)');
 
 		// console.log(io.sockets)
-
+    
 		if (numClients === 1) {
 			// socket.join(room);
 			// log('Client ID ' + socket.id + ' created room ' + room);

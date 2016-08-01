@@ -1,29 +1,5 @@
 'use strict';
 
-var isChannelReady = false;
-var isInitiator = false;
-var isStarted = false;
-var localStream;
-var pc;
-var remoteStream;
-var turnReady;
-
-var pcConfig = {
-  'iceServers': [{
-    'url': 'stun:stun.l.google.com:19302'
-  }]
-};
-
-// Set up audio and video regardless of what devices are present.
-var sdpConstraints = {
-  'mandatory': {
-    'OfferToReceiveAudio': true,
-    'OfferToReceiveVideo': true
-  }
-};
-
-/////////////////////////////////////////////
-
 var room = 'bar';
 // Could prompt for room name:
 // var room = prompt('Enter room name:');

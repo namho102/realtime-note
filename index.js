@@ -73,36 +73,25 @@ io.on('connection', function(socket) {
 		log('Room ' + room + ' now has ' + numClients + ' client(s)');
 
 		// console.log(io.sockets)
-
+    
 		if (numClients === 1) {
-			socket.join(room);
-			log('Client ID ' + socket.id + ' created room ' + room);
-			socket.emit('created', room, socket.id);
+			// socket.join(room);
+			// log('Client ID ' + socket.id + ' created room ' + room);
+			// socket.emit('created', room, socket.id);
+      socket.emit('created', room);
 
 		} else if (numClients === 2) {
-			log('Client ID ' + socket.id + ' joined room ' + room);
-			io.sockets.in(room).emit('join', room);
-			socket.join(room);
-			socket.emit('joined', room, socket.id);
-			io.sockets.in(room).emit('ready');
+			// log('Client ID ' + socket.id + ' joined room ' + room);
+			// io.sockets.in(room).emit('join', room);
+			// socket.join(room);
+
+      socket.emit('join', room);
+
 		} else { // max two clients
 			socket.emit('full', room);
 		}
 	});
 
-	socket.on('ipaddr', function() {
-		var ifaces = os.networkInterfaces();
-		for (var dev in ifaces) {
-			ifaces[dev].forEach(function(details) {
-				if (details.family === 'IPv4' && details.address !== '127.0.0.1') {
-					socket.emit('ipaddr', details.address);
-				}
-			});
-		}
-	});
 
-	socket.on('bye', function(){
-		console.log('received bye');
-	});
 
 });

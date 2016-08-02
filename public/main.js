@@ -17,11 +17,23 @@ editor.setFontSize(14);
 socket.on('update', function(data) {
   console.log('updated')
   var cursor = editor.getCursorPosition();
-  console.log(cursor)
+  var length = editor.session.getLength();
+  // console.log(cursor)
 
   editor.setByAPI = true;
   editor.setValue(data.content);
-  editor.moveCursorTo(cursor.row, cursor.column)
+  var diff = editor.session.getLength() - length;
+  console.log(diff)
+  if(diff != 0) {
+    editor.moveCursorTo(cursor.row + diff, cursor.column);
+  }
+  // else if(diff < 0) {
+  //   editor.moveCursorTo(cursor.row + diff, cursor.column);
+  // }
+  else {
+    editor.moveCursorTo(cursor.row, cursor.column);
+  }
+
   editor.clearSelection();
   editor.setByAPI = false;
 
@@ -31,6 +43,9 @@ editor.getSession().on('change', function(e) {
   // console.log(editor.getValue());
 
   // console.log(editor.selection.getCursor());
+  var currentRow = editor.getCursorPosition().row;
+  console.log(currentRow)
+
   if (!editor.setByAPI) {
     socket.emit('content', {
       content: editor.getValue()

@@ -16,9 +16,12 @@ editor.setFontSize(14);
 
 socket.on('update', function(data) {
   console.log('updated')
+  var cursor = editor.getCursorPosition();
+  console.log(cursor)
 
   editor.setByAPI = true;
   editor.setValue(data.content);
+  editor.moveCursorTo(cursor.row, cursor.column)
   editor.clearSelection();
   editor.setByAPI = false;
 
@@ -26,6 +29,8 @@ socket.on('update', function(data) {
 
 editor.getSession().on('change', function(e) {
   // console.log(editor.getValue());
+
+  // console.log(editor.selection.getCursor());
   if (!editor.setByAPI) {
     socket.emit('content', {
       content: editor.getValue()

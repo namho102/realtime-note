@@ -53,6 +53,28 @@ editor.getSession().on('change', function(e) {
   }
 });
 
+function getToken(url, cb) {
+  var request = new XMLHttpRequest();
+  request.open('GET', url, true);
+
+  request.onload = function() {
+    if (request.status >= 200 && request.status < 400) {
+      // Success!
+      var data = JSON.parse(request.responseText);
+      // console.log(data.token)
+      cb(data.token);
+    } else {
+      // We reached our target server, but it returned an error
+
+    }
+  };
+
+  request.onerror = function() {
+    // There was a connection error of some sort
+  };
+
+  request.send();
+}
 function conversationStarted(conversation) {
   // Here is where you add your own custom functionality.
   console.log('The conversation has started.');
@@ -76,26 +98,35 @@ if (room !== '') {
 
 socket.on('created', function(room) {
   console.log('Created room ' + room);
-  var accessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImN0eSI6InR3aWxpby1mcGE7dj0xIn0.eyJqdGkiOiJTSzk1ZTM3MTcyNDQzNGFhMjQ5N2ViMGM1ZDliMTZhZTc2LTE0NjkzMjM5OTYiLCJpc3MiOiJTSzk1ZTM3MTcyNDQzNGFhMjQ5N2ViMGM1ZDliMTZhZTc2Iiwic3ViIjoiQUM3MDVmODY4ZjRiOWVmYzliNzdjMzM3Njc4ZTZkNmQyNiIsImV4cCI6MTQ2OTMyNzU5NiwiZ3JhbnRzIjp7ImlkZW50aXR5IjoibG9jYWwiLCJydGMiOnsiY29uZmlndXJhdGlvbl9wcm9maWxlX3NpZCI6IlZTNzkxNjRlMmRlYTQ4YmM3ZTMyZjU2MGRkYmRkMDU5ZjIifX19.22hSug6OaLvNLCB62iGH9--tSbmdS1Jh3gzYAzUC9DM"
-  var accessManager = Twilio.AccessManager(accessToken);
-  var local = Twilio.Conversations.Client(accessManager);
+  getToken('token/local', function(token) {
 
-  // Begin listening for invites to Twilio Video conversations.
-  local.listen().then(function() {
-    local.on('invite', function(invite) {
-      invite.accept().then(onInviteAccepted);
+    var accessToken = token;
+    var local = Twilio.Conversations.Client(accessManager);
+
+    // Begin listening for invites to Twilio Video conversations.
+    local.listen().then(function() {
+      local.on('invite', function(invite) {
+        invite.accept().then(onInviteAccepted);
+      });
     });
   });
+
 
 });
 
 socket.on('join', function(room) {
   console.log('Another peer made a request to join room ' + room);
-  var accessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImN0eSI6InR3aWxpby1mcGE7dj0xIn0.eyJqdGkiOiJTSzk1ZTM3MTcyNDQzNGFhMjQ5N2ViMGM1ZDliMTZhZTc2LTE0NjkzMjQwMTQiLCJpc3MiOiJTSzk1ZTM3MTcyNDQzNGFhMjQ5N2ViMGM1ZDliMTZhZTc2Iiwic3ViIjoiQUM3MDVmODY4ZjRiOWVmYzliNzdjMzM3Njc4ZTZkNmQyNiIsImV4cCI6MTQ2OTMyNzYxNCwiZ3JhbnRzIjp7ImlkZW50aXR5IjoicmVtb3RlIiwicnRjIjp7ImNvbmZpZ3VyYXRpb25fcHJvZmlsZV9zaWQiOiJWUzc5MTY0ZTJkZWE0OGJjN2UzMmY1NjBkZGJkZDA1OWYyIn19fQ.62DPw6ubIPX8ys9TwdJZ8Qhzv1mlNLvyY3MQDR_En3Y"
-  var accessManager = new Twilio.AccessManager(accessToken);
-  var remote = new Twilio.Conversations.Client(accessManager);
 
-  remote.inviteToConversation('local').then(onInviteAccepted);
+  getToken('token/remote', function(token) {
+
+    var accessToken = token;
+    var accessManager = new Twilio.AccessManager(accessToken);
+    var remote = new Twilio.Conversations.Client(accessManager);
+
+    remote.inviteToConversation('local').then(onInviteAccepted);
+  });
+
+
 
 });
 

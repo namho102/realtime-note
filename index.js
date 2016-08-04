@@ -1,5 +1,9 @@
+require('dotenv').load();
 var os = require('os');
 var path = require('path');
+var AccessToken = require('twilio').AccessToken;
+var ConversationsGrant = AccessToken.ConversationsGrant;
+
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
@@ -22,6 +26,33 @@ app.use(function(req, res, next) {
 
 app.get('/', function(req, res) {
 	res.sendFile(__dirname + '/index.html');
+});
+
+app.get('/token/:identity', function(request, response) {
+  // console.log(request.params)
+    var identity = request.params.identity;
+
+    // Create an access token which we will sign and return to the client,
+    // containing the grant we just created
+    var token = new AccessToken(
+        process.env.TWILIO_ACCOUNT_SID,
+        process.env.TWILIO_API_KEY,
+        process.env.TWILIO_API_SECRET
+    );
+
+    // Assign the generated identity to the token
+    token.identity = identity;
+
+    //grant the access token Twilio Video capabilities
+    var grant = new ConversationsGrant();
+    grant.configurationProfileSid = process.env.TWILIO_CONFIGURATION_SID;
+    token.addGrant(grant);
+
+    // Serialize the token to a JWT string and include it in a JSON response
+    response.send({
+        identity: identity,
+        token: token.toJwt()
+    });
 });
 
 http.listen(app.get('port'), function() {
@@ -73,7 +104,7 @@ io.on('connection', function(socket) {
 		log('Room ' + room + ' now has ' + numClients + ' client(s)');
 
 		// console.log(io.sockets)
-    
+
 		if (numClients === 1) {
 			// socket.join(room);
 			// log('Client ID ' + socket.id + ' created room ' + room);

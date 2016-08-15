@@ -23,7 +23,7 @@ socket.on('update', function(data) {
   editor.setByAPI = true;
   editor.setValue(data.content);
   var diff = editor.session.getLength() - length;
-  console.log(diff)
+  // console.log(diff)
   if(diff != 0) {
     editor.moveCursorTo(cursor.row + diff, cursor.column);
   }
@@ -44,7 +44,7 @@ editor.getSession().on('change', function(e) {
 
   // console.log(editor.selection.getCursor());
   var currentRow = editor.getCursorPosition().row;
-  console.log(currentRow)
+  // console.log(currentRow)
 
   if (!editor.setByAPI) {
     socket.emit('content', {
@@ -101,7 +101,8 @@ socket.on('created', function(room) {
   getToken('token/local', function(token) {
 
     var accessToken = token;
-    var local = Twilio.Conversations.Client(accessManager);
+    console.log(accessToken)
+    var local = Twilio.Conversations.Client(accessToken);
 
     // Begin listening for invites to Twilio Video conversations.
     local.listen().then(function() {
